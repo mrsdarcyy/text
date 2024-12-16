@@ -18,8 +18,55 @@ __Эфемерное состояние__ (_от англ. ephemeral state_) —
 | Влияние на приложение | не влияет на другие части приложения. | может влиять на различные компоненты и логику приложения.    |
 
 ## Когда использовать эфемерное состояние? ##
-Эфемерное состояние зачастую используется для создания интерактивных UI элементов, чья логика отрисовки не являяется напрямую частью бизнес-логики приложения. Я выделил 3 случая, когда эфемерное состояние - наиболее подходящее решение для разработчика:
+Эфемерное состояние зачастую используется для создания интерактивных UI элементов, чья логика отрисовки не являяется напрямую частью бизнес-логики приложения. Я выделил 3 случая, когда эфемерное состояние - наиболее подходящее решение:
 1. __Состояние относится только к одному виджету:__ если изменение состояния не должно влиять на другие виджеты или экраны.
 2. __Нет необходимости сохранять состояние между сессиями:__ например, временные данные формы до её отправки.
 3. __Требуется быстрое и простое решение:__ использование `setState()` для управления локальным состоянием упрощает код и ускоряет разработку.
 
+### Пример: Раскрывающийся список (ExpansionTile) ###
+```
+import 'package:flutter/material.dart';
+
+class FAQItem extends StatefulWidget {
+  final String question;
+  final String answer;
+
+  const FAQItem({Key? key, required this.question, required this.answer})
+      : super(key: key);
+
+  @override
+  _FAQItemState createState() => _FAQItemState();
+}
+
+class _FAQItemState extends State<FAQItem> {
+  bool _isExpanded = false;
+
+  void _toggleExpansion() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: _toggleExpansion,
+          child: Text(
+            widget.question,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        if (_isExpanded)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(widget.answer),
+          ),
+      ],
+    );
+  }
+}
+```
+> Пояснение: FAQItem — это виджет, предназначенный для отображения вопроса и раскрытия ответа при нажатии. Управление состоянием _isExpanded осуществляется локально с использованием метода setState(), что делает > компонент полностью независимым. Благодаря этому виджет можно использовать в любом месте приложения без необходимости дополнительных настроек.
