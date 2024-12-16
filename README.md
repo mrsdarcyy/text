@@ -79,8 +79,43 @@ class _FAQItemState extends State<FAQItem> {
   }
 }
 ```
-> Пояснение: FAQItem — это виджет, предназначенный для отображения вопроса и раскрытия ответа при нажатии. Управление состоянием `_isExpanded` осуществляется локально с использованием метода `setState()`, что делает компонент полностью независимым. Благодаря этому виджет можно использовать в любом месте приложения без необходимости дополнительных настроек.
+> Пояснение: __FAQItem__ — это виджет, предназначенный для отображения вопроса и раскрытия ответа при нажатии. Управление состоянием `_isExpanded` осуществляется локально с использованием метода `setState()`, что делает компонент полностью независимым. Благодаря этому виджет можно использовать в любом месте приложения без необходимости дополнительных настроек.
 
 
 ## Как использовать эфемерное состояние во Flutter? ##
 Во Flutter для управления эфемерным состоянием используется `StatefulWidget` и метод `setState()`. Это простой и наиболее эффективный способ обновления интерфейса при изменении локального состояния.
+
+### Пример: Поле ввода с проверкой ###
+```
+class EmailInput extends StatefulWidget {
+  const EmailInput({Key? key}) : super(key: key);
+
+  @override
+  _EmailInputState createState() => _EmailInputState();
+}
+
+class _EmailInputState extends State<EmailInput> {
+  final TextEditingController _controller = TextEditingController();
+  String? _errorText;
+
+  void _validateEmail(String value) {
+    setState(() {
+      _errorText = value.contains('@') ? null : 'Введите корректный email';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      decoration: InputDecoration(
+        labelText: 'Email',
+        errorText: _errorText,
+      ),
+      onChanged: _validateEmail,
+    );
+  }
+}
+```
+> __EmailInput__ — это виджет для ввода email с простой валидацией, где состояние ошибки `_errorText` управляется локально. Глобальное состояние не требуется, так как проверка применяется исключительно внутри этого виджета.
+
